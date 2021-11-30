@@ -235,6 +235,9 @@ func (ring *Keyring) AddKey(name string, priv crypto.PrivateKey, opts *Options) 
 	}
 	id, err := unix.AddKey("asymmetric", name, privBytes, ringid)
 	if err != nil {
+		if err == unix.EBADMSG {
+			return nil, fmt.Errorf("bad message: is the 'pkcs8_key_parser' module loaded?")
+		}
 		return nil, err
 	}
 	key := Key{
